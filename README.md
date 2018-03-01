@@ -36,6 +36,64 @@ pod repo update # optional and can be very long
 pod install
 ```
 
+### Configuration
+
+#### 3D Secure
+
+If you plan on using 3D Secure, you have to do the following.
+
+##### Configure a new URL scheme
+
+Add a bundle url scheme `payments` in your app Info via XCode or manually in the `Info.plist`.
+In your `Info.plist`, you should have something like:
+
+```xml
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLName</key>
+        <string>com.myapp</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>payments</string>
+        </array>
+    </dict>
+</array>
+```
+
+##### Update your code
+
+In your `AppDelegate.m`:
+
+```objective-c
+#import "BraintreeCore.h"
+
+...
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    ...
+    [BTAppSwitch setReturnURLScheme:[self getPaymentsURLScheme]];
+}
+
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+
+    if ([url.scheme localizedCaseInsensitiveCompare:[self getPaymentsURLScheme]] == NSOrderedSame) {
+        return [BTAppSwitch handleOpenURL:url options:options];
+    }
+    
+    return [RCTLinkingManager application:application openURL:url options:options];
+}
+
+-(NSString *)getPaymentsURLScheme {
+    NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
+    return [NSString stringWithFormat:@"%@.%@", bundleIdentifier, @"payments"];
+}
+```
+
 ## Usage
 
 For the API, see the [Flow typings](./index.js.flow).
@@ -52,7 +110,7 @@ BraintreeDropIn.show({
 .catch(error => console.warn(error));
 ```
 
-### With 3D Secure
+### 3D Secure
 
 ```javascript
 import BraintreeDropIn from 'react-native-braintree-drop-in';
