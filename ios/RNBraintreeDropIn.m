@@ -21,8 +21,14 @@ RCT_REMAP_METHOD(show,
 
     NSDictionary* threeDSecureOptions = options[@"threeDSecure"];
     if (threeDSecureOptions) {
+        NSNumber* threeDSecureAmount = threeDSecureOptions[@"amount"];
+        if (!threeDSecureAmount) {
+            reject(@"NO_3DS_AMOUNT", @"You must provide an amount for 3D Secure", nil);
+            return;
+        }
+
         request.threeDSecureVerification = YES;
-        request.amount = threeDSecureOptions[@"amount"];
+        request.amount = [threeDSecureAmount stringValue];
     }
 
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:clientToken request:request handler:^(BTDropInController * _Nonnull controller, BTDropInResult * _Nullable result, NSError * _Nullable error) {
