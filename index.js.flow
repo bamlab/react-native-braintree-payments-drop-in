@@ -1,0 +1,17 @@
+type ShowOptions = {|
+  clientToken: string,
+  threeDSecure?: {|
+    amount: number,
+  |},
+|};
+
+type ShowResult = {|
+  nonce: string,
+  description: string,
+  type: string,
+  isDefault: boolean,
+|};
+
+declare module.exports: {
+  show: (options: ShowOptions) => Promise<ShowResult>,
+};
