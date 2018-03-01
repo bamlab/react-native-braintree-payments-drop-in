@@ -13,7 +13,7 @@ RCT_REMAP_METHOD(showDropIn,
 {
     NSString* clientToken = options[@"clientToken"];
     if (!clientToken) {
-        reject("@NO_CLIENT_TOKEN", @"You must provide a client token", nil);
+        reject(@"NO_CLIENT_TOKEN", @"You must provide a client token", nil);
         return;
     }
 
@@ -33,14 +33,12 @@ RCT_REMAP_METHOD(showDropIn,
             } else if (result.cancelled) {
                 reject(@"USER_CANCELLATION", @"The user cancelled", nil);
             } else {
-                // Use the BTDropInResult properties to update your UI
-                // result.paymentOptionType
-                // result.paymentMethod
-                // result.paymentIcon
-                // result.paymentDescription
-
-                // TODO resolve result
-                resolve(result.paymentMethod.nonce);
+                NSMutableDictionary* jsResult = [NSMutableDictionary new];
+                [jsResult setObject:result.paymentMethod.nonce forKey:@"nonce"];
+                [jsResult setObject:result.paymentMethod.type forKey:@"type"];
+                [jsResult setObject:result.paymentDescription forKey:@"description"];
+                [jsResult setObject:[NSNumber numberWithBool:result.paymentMethod.isDefault] forKey:@"isDefault"];
+                resolve(jsResult);
             }
         }];
     [self.reactRoot presentViewController:dropIn animated:YES completion:nil];
