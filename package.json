@@ -1,0 +1,27 @@
+{
+  "name": "react-native-braintree-drop-in",
+  "version": "1.0.0",
+  "description": "React Native integration of Braintree Drop-in",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:bamlab/react-native-braintree-drop-in.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react-native",
+    "braintree",
+    "drop-in"
+  ],
+  "author": {
+    "name": "Louis Lagrange",
+    "email": "lagrange.louis@gmail.com",
+    "url": "https://github.com/Minishlink"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "react-native": "*"
+  }
+}
