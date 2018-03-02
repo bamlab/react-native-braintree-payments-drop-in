@@ -35,19 +35,34 @@ RCT_REMAP_METHOD(show,
             [self.reactRoot dismissViewControllerAnimated:YES completion:nil];
 
             if (error != nil) {
-                reject(error.description, error.description, error);
+                reject(error.localizedDescription, error.localizedDescription, error);
             } else if (result.cancelled) {
                 reject(@"USER_CANCELLATION", @"The user cancelled", nil);
             } else {
-                NSMutableDictionary* jsResult = [NSMutableDictionary new];
-                [jsResult setObject:result.paymentMethod.nonce forKey:@"nonce"];
-                [jsResult setObject:result.paymentMethod.type forKey:@"type"];
-                [jsResult setObject:result.paymentDescription forKey:@"description"];
-                [jsResult setObject:[NSNumber numberWithBool:result.paymentMethod.isDefault] forKey:@"isDefault"];
-                resolve(jsResult);
+                if (threeDSecureOptions && [result.paymentMethod isKindOfClass:[BTCardNonce class]]) {
+                    BTCardNonce *cardNonce = (BTCardNonce *)result.paymentMethod;
+                    if (!cardNonce.threeDSecureInfo.liabilityShiftPossible) {
+                        reject(@"3DSECURE_NOT_ABLE_TO_SHIFT_LIABILITY", @"3D Secure liability cannot be shifted", nil);
+                    } else if (!cardNonce.threeDSecureInfo.liabilityShifted) {
+                        reject(@"3DSECURE_LIABILITY_NOT_SHIFTED", @"3D Secure liability was not shifted", nil);
+                    } else {
+                        [[self class] resolvePayment :result resolver:resolve];
+                    }
+                } else {
+                    [[self class] resolvePayment :result resolver:resolve];
+                }
             }
         }];
     [self.reactRoot presentViewController:dropIn animated:YES completion:nil];
+}
+
++ (void)resolvePayment:(BTDropInResult* _Nullable)result resolver:(RCTPromiseResolveBlock _Nonnull)resolve {
+    NSMutableDictionary* jsResult = [NSMutableDictionary new];
+    [jsResult setObject:result.paymentMethod.nonce forKey:@"nonce"];
+    [jsResult setObject:result.paymentMethod.type forKey:@"type"];
+    [jsResult setObject:result.paymentDescription forKey:@"description"];
+    [jsResult setObject:[NSNumber numberWithBool:result.paymentMethod.isDefault] forKey:@"isDefault"];
+    resolve(jsResult);
 }
 
 - (UIViewController*)reactRoot {

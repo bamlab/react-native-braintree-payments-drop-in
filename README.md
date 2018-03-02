@@ -128,5 +128,12 @@ BraintreeDropIn.show({
   },
 })
 .then(result => console.log(result))
-.catch(error => console.warn(error));
+.catch((error) => {
+  if (error.code === 'USER_CANCELLATION') {
+    // update your UI to handle cancellation
+  } else {
+    // update your UI to handle other errors
+    // for 3D secure, there are two other specific error codes: 3DSECURE_NOT_ABLE_TO_SHIFT_LIABILITY and 3DSECURE_LIABILITY_NOT_SHIFTED
+  }
+});
 ```

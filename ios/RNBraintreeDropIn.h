@@ -6,9 +6,12 @@
 
 #import "BraintreeCore.h"
 #import "BraintreeDropIn.h"
+#import "BTCardNonce.h"
 
 @interface RNBraintreeDropIn : NSObject <RCTBridgeModule>
 
-@property (nonatomic, strong) UIViewController *reactRoot;
+@property (nonatomic, strong) UIViewController* _Nonnull reactRoot;
+
++ (void)resolvePayment:(BTDropInResult* _Nullable)result resolver:(RCTPromiseResolveBlock _Nonnull)resolve;
 
 @end
