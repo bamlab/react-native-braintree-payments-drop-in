@@ -44,7 +44,7 @@ If you plan on using 3D Secure, you have to do the following.
 
 ##### Configure a new URL scheme
 
-Add a bundle url scheme `payments` in your app Info via XCode or manually in the `Info.plist`.
+Add a bundle url scheme `{BUNDLE_IDENTIFIER}.payments` in your app Info via XCode or manually in the `Info.plist`.
 In your `Info.plist`, you should have something like:
 
 ```xml
@@ -57,7 +57,7 @@ In your `Info.plist`, you should have something like:
         <string>com.myapp</string>
         <key>CFBundleURLSchemes</key>
         <array>
-            <string>payments</string>
+            <string>com.myapp.payments</string>
         </array>
     </dict>
 </array>
@@ -74,21 +74,21 @@ In your `AppDelegate.m`:
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     ...
-    [BTAppSwitch setReturnURLScheme:[self getPaymentsURLScheme]];
+    [BTAppSwitch setReturnURLScheme:self.paymentsURLScheme];
 }
 
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
 
-    if ([url.scheme localizedCaseInsensitiveCompare:[self getPaymentsURLScheme]] == NSOrderedSame) {
+    if ([url.scheme localizedCaseInsensitiveCompare:self.paymentsURLScheme] == NSOrderedSame) {
         return [BTAppSwitch handleOpenURL:url options:options];
     }
     
     return [RCTLinkingManager application:application openURL:url options:options];
 }
 
--(NSString *)getPaymentsURLScheme {
+- (NSString *)paymentsURLScheme {
     NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
     return [NSString stringWithFormat:@"%@.%@", bundleIdentifier, @"payments"];
 }
@@ -107,7 +107,13 @@ BraintreeDropIn.show({
   clientToken: 'token',
 })
 .then(result => console.log(result))
-.catch(error => console.warn(error));
+.catch((error) => {
+  if (error.code === 'USER_CANCELLATION') {
+    // update your UI to handle cancellation
+  } else {
+    // update your UI to handle other errors
+  }
+});
 ```
 
 ### 3D Secure
