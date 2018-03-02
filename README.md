@@ -26,6 +26,9 @@ In your `Podfile`, add:
 
 ```
 pod 'BraintreeDropIn', '~> 6.0'
+
+# uncomment the next line to support credit card scanning
+# pod 'CardIO'
 ```
 
 Then:
