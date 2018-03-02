@@ -1,4 +1,4 @@
-# react-native-braintree-drop-in
+# react-native-braintree-dropin
 
 > React Native integration of Braintree Drop-in
 
@@ -7,13 +7,13 @@
 ## Getting started
 
 ```bash
-yarn add react-native-braintree-drop-in
+yarn add react-native-braintree-payments-drop-in
 ```
 
 ### Mostly automatic installation
 
 ```bash
-react-native link react-native-braintree-drop-in
+react-native link react-native-braintree-payments-drop-in
 ```
 
 #### iOS specific
@@ -101,7 +101,7 @@ For the API, see the [Flow typings](./index.js.flow).
 ### Basic
 
 ```javascript
-import BraintreeDropIn from 'react-native-braintree-drop-in';
+import BraintreeDropIn from 'react-native-braintree-payments-drop-in';
 
 BraintreeDropIn.show({
   clientToken: 'token',
@@ -119,7 +119,7 @@ BraintreeDropIn.show({
 ### 3D Secure
 
 ```javascript
-import BraintreeDropIn from 'react-native-braintree-drop-in';
+import BraintreeDropIn from 'react-native-braintree-payments-drop-in';
 
 BraintreeDropIn.show({
   clientToken: 'token',
