@@ -6,12 +6,15 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.Promise;
 import com.braintreepayments.api.dropin.DropInActivity;
 import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.DropInResult;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 
 public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
@@ -65,8 +68,15 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
       if (resultCode == Activity.RESULT_OK) {
         DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
-        String paymentMethodNonce = result.getPaymentMethodNonce().getNonce();
-        mPromise.resolve(paymentMethodNonce);
+        PaymentMethodNonce paymentMethodNonce = result.getPaymentMethodNonce();
+
+        WritableMap jsResult = Arguments.createMap();
+        jsResult.putString("nonce", paymentMethodNonce.getNonce());
+        jsResult.putString("type", paymentMethodNonce.getTypeLabel());
+        jsResult.putString("description", paymentMethodNonce.getDescription());
+        jsResult.putBoolean("isDefault", paymentMethodNonce.isDefault());
+
+        mPromise.resolve(jsResult);
       } else if (resultCode == Activity.RESULT_CANCELED) {
         mPromise.reject("USER_CANCELLATION", "The user cancelled");
       } else {
