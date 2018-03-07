@@ -2,8 +2,6 @@
 
 > React Native integration of Braintree Drop-in
 
-*** for iOS only at the moment***
-
 ## Getting started
 
 ```bash
@@ -39,13 +37,27 @@ pod repo update # optional and can be very long
 pod install
 ```
 
+#### Android specific
+
+If you want to add card scanning, add in your `app/build.gradle`:
+
+```
+dependencies {
+...
+    implementation "io.card:android-sdk:5.+"
+```
+
 ### Configuration
+
+For more configuration options, see Braintree's documentation ([iOS](https://github.com/braintree/braintree-ios-drop-in) | [Android](https://github.com/braintree/braintree-android-drop-in)).
 
 #### 3D Secure
 
 If you plan on using 3D Secure, you have to do the following.
 
-##### Configure a new URL scheme
+##### iOS
+
+###### Configure a new URL scheme
 
 Add a bundle url scheme `{BUNDLE_IDENTIFIER}.payments` in your app Info via XCode or manually in the `Info.plist`.
 In your `Info.plist`, you should have something like:
@@ -66,7 +78,7 @@ In your `Info.plist`, you should have something like:
 </array>
 ```
 
-##### Update your code
+###### Update your code
 
 In your `AppDelegate.m`:
 
@@ -96,6 +108,11 @@ In your `AppDelegate.m`:
     return [NSString stringWithFormat:@"%@.%@", bundleIdentifier, @"payments"];
 }
 ```
+
+##### Android
+
+Setup [browser switch](https://developers.braintreepayments.com/guides/client-sdk/setup/android/v2#browser-switch-setup).
+
 
 ## Usage
 
