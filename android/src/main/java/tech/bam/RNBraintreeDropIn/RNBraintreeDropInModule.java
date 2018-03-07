@@ -15,11 +15,15 @@ import com.braintreepayments.api.dropin.DropInActivity;
 import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.CardNonce;
+import com.braintreepayments.api.models.ThreeDSecureInfo;
 
 public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
   private Promise mPromise;
   private static final int DROP_IN_REQUEST = 0x444;
+
+  private boolean isVerifyingThreeDSecure = false;
 
   public RNBraintreeDropInModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -28,6 +32,8 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void show(final ReadableMap options, final Promise promise) {
+    isVerifyingThreeDSecure = false;
+
     if (!options.hasKey("clientToken")) {
       promise.reject("NO_CLIENT_TOKEN", "You must provide a client token");
       return;
@@ -47,6 +53,8 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
         promise.reject("NO_3DS_AMOUNT", "You must provide an amount for 3D Secure");
         return;
       }
+
+      isVerifyingThreeDSecure = true;
 
       dropInRequest
       .amount(String.valueOf(threeDSecureOptions.getDouble("amount")))
@@ -70,13 +78,19 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
         DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
         PaymentMethodNonce paymentMethodNonce = result.getPaymentMethodNonce();
 
-        WritableMap jsResult = Arguments.createMap();
-        jsResult.putString("nonce", paymentMethodNonce.getNonce());
-        jsResult.putString("type", paymentMethodNonce.getTypeLabel());
-        jsResult.putString("description", paymentMethodNonce.getDescription());
-        jsResult.putBoolean("isDefault", paymentMethodNonce.isDefault());
-
-        mPromise.resolve(jsResult);
+        if (isVerifyingThreeDSecure && paymentMethodNonce instanceof CardNonce) {
+          CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+          ThreeDSecureInfo threeDSecureInfo = cardNonce.getThreeDSecureInfo();
+          if (!threeDSecureInfo.isLiabilityShiftPossible()) {
+            mPromise.reject("3DSECURE_NOT_ABLE_TO_SHIFT_LIABILITY", "3D Secure liability cannot be shifted");
+          } else if (!threeDSecureInfo.isLiabilityShifted()) {
+            mPromise.reject("3DSECURE_LIABILITY_NOT_SHIFTED", "3D Secure liability was not shifted");
+          } else {
+            resolvePayment(paymentMethodNonce);
+          }
+        } else {
+          resolvePayment(paymentMethodNonce);
+        }
       } else if (resultCode == Activity.RESULT_CANCELED) {
         mPromise.reject("USER_CANCELLATION", "The user cancelled");
       } else {
@@ -87,6 +101,16 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
       mPromise = null;
     }
   };
+
+  private final void resolvePayment(PaymentMethodNonce paymentMethodNonce) {
+    WritableMap jsResult = Arguments.createMap();
+    jsResult.putString("nonce", paymentMethodNonce.getNonce());
+    jsResult.putString("type", paymentMethodNonce.getTypeLabel());
+    jsResult.putString("description", paymentMethodNonce.getDescription());
+    jsResult.putBoolean("isDefault", paymentMethodNonce.isDefault());
+
+    mPromise.resolve(jsResult);
+  }
 
   @Override
   public String getName() {
