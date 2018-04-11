@@ -41,9 +41,11 @@ RCT_REMAP_METHOD(show,
             } else {
                 if (threeDSecureOptions && [result.paymentMethod isKindOfClass:[BTCardNonce class]]) {
                     BTCardNonce *cardNonce = (BTCardNonce *)result.paymentMethod;
-                    if (!cardNonce.threeDSecureInfo.liabilityShiftPossible && cardNonce.threeDSecureInfo.wasVerified) {
+                    if (!cardNonce.threeDSecureInfo.wasVerified) {
+                        reject(@"3DSECURE_NOT_VERIFIED", @"3D Secure was not verified", nil);
+                    } else if (!cardNonce.threeDSecureInfo.liabilityShiftPossible) {
                         reject(@"3DSECURE_NOT_ABLE_TO_SHIFT_LIABILITY", @"3D Secure liability cannot be shifted", nil);
-                    } else if (!cardNonce.threeDSecureInfo.liabilityShifted && cardNonce.threeDSecureInfo.wasVerified) {
+                    } else if (!cardNonce.threeDSecureInfo.liabilityShifted) {
                         reject(@"3DSECURE_LIABILITY_NOT_SHIFTED", @"3D Secure liability was not shifted", nil);
                     } else {
                         [[self class] resolvePayment :result resolver:resolve];
