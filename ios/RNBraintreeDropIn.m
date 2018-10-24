@@ -18,6 +18,8 @@ RCT_REMAP_METHOD(show,
     }
 
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
+    request.vaultManager = YES;
+    request.paypalDisabled = YES;
 
     NSDictionary* threeDSecureOptions = options[@"threeDSecure"];
     if (threeDSecureOptions) {
