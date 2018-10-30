@@ -45,7 +45,10 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    DropInRequest dropInRequest = new DropInRequest().clientToken(options.getString("clientToken"));
+    DropInRequest dropInRequest = new DropInRequest()
+      .clientToken(options.getString("clientToken"))
+      .disablePayPal()
+      .vaultManager(true);
 
     if (options.hasKey("threeDSecure")) {
       final ReadableMap threeDSecureOptions = options.getMap("threeDSecure");
