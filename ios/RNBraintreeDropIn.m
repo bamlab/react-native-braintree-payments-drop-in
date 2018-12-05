@@ -1,4 +1,11 @@
 #import "RNBraintreeDropIn.h"
+#import "BTDataCollector.h"
+
+@interface RNBraintreeDropIn () <BTDataCollectorDelegate>
+// Retain BTDataCollector for entire lifecycle of view controller
+@property (nonatomic, strong) BTDataCollector *dataCollector;
+@property (nonatomic, strong) NSString *deviceData;
+@end
 
 @implementation RNBraintreeDropIn
 
@@ -16,6 +23,10 @@ RCT_REMAP_METHOD(show,
         reject(@"NO_CLIENT_TOKEN", @"You must provide a client token", nil);
         return;
     }
+
+    BTAPIClient *apiClient = [[BTAPIClient alloc] initWithAuthorization:clientToken];
+    self.dataCollector = [[BTDataCollector alloc] initWithAPIClient:apiClient];
+    self.dataCollector.delegate = self;
 
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
     request.vaultManager = YES;
@@ -35,6 +46,9 @@ RCT_REMAP_METHOD(show,
 
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:clientToken request:request handler:^(BTDropInController * _Nonnull controller, BTDropInResult * _Nullable result, NSError * _Nullable error) {
             [self.reactRoot dismissViewControllerAnimated:YES completion:nil];
+            [dataCollector collectCardFraudData:^(NSString * _Nonnull deviceData) {
+                self.deviceData = deviceData;
+            }];
 
             if (error != nil) {
                 reject(error.localizedDescription, error.localizedDescription, error);
@@ -64,6 +78,7 @@ RCT_REMAP_METHOD(show,
     [jsResult setObject:result.paymentMethod.type forKey:@"type"];
     [jsResult setObject:result.paymentDescription forKey:@"description"];
     [jsResult setObject:[NSNumber numberWithBool:result.paymentMethod.isDefault] forKey:@"isDefault"];
+    [jsResult setObject:self.deviceData forKey:@"deviceData"];
     resolve(jsResult);
 }
 
