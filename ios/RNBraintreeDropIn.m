@@ -8,6 +8,24 @@
 }
 RCT_EXPORT_MODULE()
 
+RCT_EXPORT_METHOD(getDeviceData:(NSDictionary*)options
+                       resolver: (RCTPromiseResolveBlock)resolve
+                       rejecter: (RCTPromiseRejectBlock)reject)
+{
+    NSString* clientToken = options[@"clientToken"];
+    if (!clientToken) {
+        reject(@"NO_CLIENT_TOKEN", @"You must provide a client token", nil);
+        return;
+    }
+
+    BTAPIClient *apiClient = [[BTAPIClient alloc] initWithAuthorization:clientToken];
+    self.dataCollector = [[BTDataCollector alloc] initWithAPIClient:apiClient];
+
+    [self.dataCollector collectCardFraudData:^(NSString * _Nonnull deviceData) {
+        resolve(deviceData);
+    }];
+}
+
 RCT_REMAP_METHOD(show,
                  showWithOptions:(NSDictionary*)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
