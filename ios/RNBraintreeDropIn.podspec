@@ -11,6 +11,6 @@ Pod::Spec.new do |s|
   s.author             = { "author" => "lagrange.louis@gmail.com" }
   s.platform     = :ios, "9.0"
   s.source       = { :git => "https://github.com/bamlab/react-native-braintree-payments-drop-in.git", :tag => "master" }
-  s.source_files  = "RNBraintreeDropIn/**/*.{h,m}"
+  s.source_files  = "*.{h,m}"
   s.requires_arc = true
 end
