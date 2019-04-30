@@ -13,4 +13,6 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/bamlab/react-native-braintree-payments-drop-in.git", :tag => "master" }
   s.source_files  = "*.{h,m}"
   s.requires_arc = true
+
+  s.dependency "React"
 end
