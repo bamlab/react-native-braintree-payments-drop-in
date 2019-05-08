@@ -1,6 +1,6 @@
 {
   "name": "react-native-braintree-payments-drop-in",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "React Native integration of Braintree Drop-in",
   "main": "index.js",
   "repository": {
