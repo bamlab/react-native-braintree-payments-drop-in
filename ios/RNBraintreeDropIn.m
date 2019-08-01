@@ -53,7 +53,12 @@ RCT_REMAP_METHOD(show,
                 }
             }
         }];
-    [self.reactRoot presentViewController:dropIn animated:YES completion:nil];
+
+    if (dropIn != nil) {
+        [self.reactRoot presentViewController:dropIn animated:YES completion:nil];
+    } else {
+        reject(@"INVALID_CLIENT_TOKEN", @"The client token seems invalid", nil);
+    }
 }
 
 + (void)resolvePayment:(BTDropInResult* _Nullable)result resolver:(RCTPromiseResolveBlock _Nonnull)resolve {
