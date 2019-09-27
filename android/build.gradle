@@ -36,6 +36,7 @@ dependencies {
     implementation 'com.facebook.react:react-native:+'
 }
 
+// https://developers.braintreepayments.com/guides/3d-secure/migration/android/v3
 rootProject.allprojects {
     repositories {
         maven {
