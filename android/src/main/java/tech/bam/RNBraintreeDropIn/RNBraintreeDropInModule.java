@@ -2,6 +2,8 @@ package tech.bam.RNBraintreeDropIn;
 
 import android.app.Activity;
 import android.content.Intent;
+
+import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -17,6 +19,8 @@ import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.ThreeDSecureInfo;
+import com.google.android.gms.wallet.TransactionInfo;
+import com.google.android.gms.wallet.WalletConstants;
 
 public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
@@ -46,6 +50,35 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
     }
 
     DropInRequest dropInRequest = new DropInRequest().clientToken(options.getString("clientToken"));
+
+    if (options.hasKey("googlePay")) {
+      final ReadableMap googlePayOptions = options.getMap("googlePay");
+      if (!googlePayOptions.hasKey("amount")) {
+        promise.reject("NO_GOOGLE_PAY_AMOUNT", "You must provide an amount for Google Pay");
+        return;
+      }
+      if (!googlePayOptions.hasKey("currencyCode")) {
+        promise.reject("NO_GOOGLE_PAY_CURRENCY_CODE", "You must provide an currency code for Google Pay");
+        return;
+      }
+
+      GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
+              .transactionInfo(TransactionInfo.newBuilder()
+                      .setTotalPrice(String.valueOf(googlePayOptions.getDouble("amount")))
+                      .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                      .setCurrencyCode(googlePayOptions.getString("currencyCode"))
+                      .build());
+      if (googlePayOptions.hasKey("merchantID")) {
+        googlePaymentRequest.googleMerchantId(googlePayOptions.getString("merchantID")); 
+      }
+      if (googlePayOptions.hasKey("merchantName")) {
+        googlePaymentRequest.googleMerchantName(googlePayOptions.getString("merchantName"));
+      }
+      googlePaymentRequest.googleMerchantName("Simi");
+      dropInRequest.googlePaymentRequest(googlePaymentRequest);
+    } else {
+      dropInRequest.disableGooglePayment();
+    }
 
     if (options.hasKey("threeDSecure")) {
       final ReadableMap threeDSecureOptions = options.getMap("threeDSecure");
