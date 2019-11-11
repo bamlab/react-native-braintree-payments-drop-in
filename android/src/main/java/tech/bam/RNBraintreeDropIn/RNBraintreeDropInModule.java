@@ -58,7 +58,7 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
         return;
       }
       if (!googlePayOptions.hasKey("currencyCode")) {
-        promise.reject("NO_GOOGLE_PAY_CURRENCY_CODE", "You must provide an currency code for Google Pay");
+        promise.reject("NO_GOOGLE_PAY_CURRENCY_CODE", "You must provide a currency code for Google Pay");
         return;
       }
 
@@ -74,7 +74,6 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
       if (googlePayOptions.hasKey("merchantName")) {
         googlePaymentRequest.googleMerchantName(googlePayOptions.getString("merchantName"));
       }
-      googlePaymentRequest.googleMerchantName("Simi");
       dropInRequest.googlePaymentRequest(googlePaymentRequest);
     } else {
       dropInRequest.disableGooglePayment();
