@@ -16,4 +16,5 @@ Pod::Spec.new do |s|
 
   s.dependency "React"
   s.dependency "BraintreeDropIn", '~> 7.4'
+  s.dependency "Braintree/Apple-Pay"
 end
