@@ -72,7 +72,8 @@ RCT_REMAP_METHOD(show,
             } else {
                 [self performThreeDSecureVerification :result resolver:resolve rejecter:reject];
             }
-        }];
+                
+        }}];
 
     if (dropIn != nil) {
         [self.reactRoot presentViewController:dropIn animated:YES completion:nil];
