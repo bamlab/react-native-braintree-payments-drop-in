@@ -17,6 +17,7 @@ import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.ThreeDSecureInfo;
+import com.braintreepayments.api.models.ThreeDSecureRequest;
 
 public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
@@ -63,6 +64,7 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
       dropInRequest
       .amount(String.valueOf(threeDSecureOptions.getDouble("amount")))
       .requestThreeDSecureVerification(true);
+      .versionRequested(ThreeDSecureRequest.VERSION_2)
     }
 
     mPromise = promise;
