@@ -61,11 +61,12 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
       isVerifyingThreeDSecure = true;
 
-    ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
-      .versionRequested(ThreeDSecureRequest.VERSION_2);
+      ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
+        .amount(String.valueOf(threeDSecureOptions.getDouble("amount")))
+        .versionRequested(ThreeDSecureRequest.VERSION_2);
+
 
       dropInRequest
-      .amount(String.valueOf(threeDSecureOptions.getDouble("amount")))
       .requestThreeDSecureVerification(true)
       .threeDSecureRequest(threeDSecureRequest);
     }
