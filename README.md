@@ -11,6 +11,7 @@ yarn add react-native-braintree-payments-drop-in
 ### Mostly automatic installation
 
 ```bash
+# Run this only if you are on RN < 0.60
 react-native link react-native-braintree-payments-drop-in
 ```
 
@@ -23,7 +24,8 @@ If you don't have a Podfile or are unsure on how to proceed, see the [CocoaPods]
 In your `Podfile`, add:
 
 ```
-pod 'BraintreeDropIn', '~> 6.0'
+# uncomment the next line if you are on RN < 0.60
+#pod 'BraintreeDropIn', '~> 6.0'
 
 # uncomment the next line to support credit card scanning
 # pod 'CardIO'
@@ -33,8 +35,8 @@ Then:
 
 ```bash
 cd ios
-pod repo update # optional and can be very long
-pod install
+bundle exec pod repo update # optional and can be very long
+bundle exec pod install
 ```
 
 #### Android specific

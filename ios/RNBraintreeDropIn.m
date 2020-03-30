@@ -34,7 +34,7 @@ RCT_REMAP_METHOD(show,
         reject(@"NO_CLIENT_TOKEN", @"You must provide a client token", nil);
         return;
     }
-
+    
     self.options = options;
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
     request.vaultManager = YES;
@@ -47,9 +47,13 @@ RCT_REMAP_METHOD(show,
             reject(@"NO_3DS_AMOUNT", @"You must provide an amount for 3D Secure", nil);
             return;
         }
+        
+        BTThreeDSecureRequest *threeDSecureRequest = [[BTThreeDSecureRequest alloc] init];
+        threeDSecureRequest.versionRequested = BTThreeDSecureVersion2;
+        threeDSecureRequest.amount = [threeDSecureAmount stringValue];
 
         request.threeDSecureVerification = YES;
-        request.amount = [threeDSecureAmount stringValue];
+        request.threeDSecureRequest = threeDSecureRequest;
     }
 
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:clientToken request:request handler:^(BTDropInController * _Nonnull controller, BTDropInResult * _Nullable result, NSError * _Nullable error) {
@@ -75,8 +79,9 @@ RCT_REMAP_METHOD(show,
         } else {
             [[self class] resolvePayment :result resolver:resolve];
         }
-    }];
-    [self.reactRoot presentViewController:dropIn animated:YES completion:nil];
+        }];
+
+        [self.reactRoot presentViewController:dropIn animated:YES completion:nil];
 }
 
 + (void)resolvePayment:(BTDropInResult* _Nullable)result resolver:(RCTPromiseResolveBlock _Nonnull)resolve {
@@ -115,16 +120,20 @@ RCT_REMAP_METHOD(show,
 }
 
 - (void)performThreeDSecureVerification:(BTDropInResult* _Nonnull)result resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+
     BTAPIClient* apiClient = [[BTAPIClient alloc] initWithAuthorization:self.options[@"clientToken"]];
     BTPaymentFlowDriver *paymentFlowDriver = [[BTPaymentFlowDriver alloc] initWithAPIClient:apiClient];
     paymentFlowDriver.viewControllerPresentingDelegate = self;
 
-    BTThreeDSecureRequest *request = [[BTThreeDSecureRequest alloc] init];
+    BTThreeDSecureRequest *threeDSecureRequest = [[BTThreeDSecureRequest alloc] init];
     NSDictionary* threeDSecureOptions = self.options[@"threeDSecure"];
-    request.amount = threeDSecureOptions[@"amount"];
-    request.nonce = result.paymentMethod.nonce;
+    threeDSecureRequest.amount = threeDSecureOptions[@"amount"];
+    threeDSecureRequest.nonce = result.paymentMethod.nonce;
+    threeDSecureRequest.versionRequested = BTThreeDSecureVersion2;
 
-    [paymentFlowDriver startPaymentFlow:request completion:^(BTPaymentFlowResult * _Nonnull paymentFlowResult, NSError * _Nonnull paymentFlowError) {
+
+    threeDSecureRequest.threeDSecureRequestDelegate = self;
+    [paymentFlowDriver startPaymentFlow:threeDSecureRequest completion:^(BTPaymentFlowResult * _Nonnull paymentFlowResult, NSError * _Nonnull paymentFlowError) {
         if (paymentFlowError) {
             if (paymentFlowError.code == BTPaymentFlowDriverErrorTypeCanceled) {
                 reject(@"USER_CANCELLATION", @"The user cancelled", nil);
