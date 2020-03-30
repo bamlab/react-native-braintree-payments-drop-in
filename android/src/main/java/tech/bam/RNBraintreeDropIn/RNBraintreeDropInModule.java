@@ -95,9 +95,9 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
           CardNonce cardNonce = (CardNonce) paymentMethodNonce;
           ThreeDSecureInfo threeDSecureInfo = cardNonce.getThreeDSecureInfo();
           if (!threeDSecureInfo.isLiabilityShiftPossible()) {
-            mPromise.reject("3DSECURE_NOT_ABLE_TO_SHIFT_LIABILITY", "Card security verification failed.");
+            mPromise.reject("3DSECURE_NOT_ABLE_TO_SHIFT_LIABILITY", "3D Secure liability was not shifted");
           } else if (!threeDSecureInfo.isLiabilityShifted()) {
-            mPromise.reject("3DSECURE_LIABILITY_NOT_SHIFTED", "Card security verification failed.");
+            mPromise.reject("3DSECURE_LIABILITY_NOT_SHIFTED", "3D Secure liability was not shifted");
           } else {
             resolvePayment(paymentMethodNonce, deviceData);
           }

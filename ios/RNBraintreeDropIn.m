@@ -112,7 +112,7 @@ RCT_REMAP_METHOD(show,
         if (cardNonce.threeDSecureInfo.liabilityShifted) { // 3D Secure authentication success
             [[self class] resolvePayment :result resolver:resolve];
         } else { // 3D Secure authentication failed
-            reject(@"3DSECURE_LIABILITY_NOT_SHIFTED", @"Card security verification failed.", nil);
+            reject(@"3DSECURE_LIABILITY_NOT_SHIFTED", @"3D Secure liability was not shifted", nil);
         }
     } else { // 3D Secure is not support, we allow users to continue without 3D Secure
         [[self class] resolvePayment :result resolver:resolve];
