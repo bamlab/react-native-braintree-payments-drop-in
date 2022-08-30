@@ -27,6 +27,13 @@ android {
 }
 
 repositories {
+     maven {
+        url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
+        credentials {
+            username 'braintree_team_sdk'
+            password 'AKCp8jQcoDy2hxSWhDAUQKXLDPDx6NYRkqrgFLRc3qDrayg6rrCbJpsKKyMwaykVL8FWusJpp'
+        }
+    }
     mavenCentral()
     google()
 }
@@ -36,13 +43,4 @@ dependencies {
     implementation 'com.facebook.react:react-native:+'
 }
 
-// https://developers.braintreepayments.com/guides/3d-secure/migration/android/v3
-rootProject.allprojects {
-    maven {
-        url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
-        credentials {
-            username 'braintree_team_sdk'
-            password 'AKCp8jQcoDy2hxSWhDAUQKXLDPDx6NYRkqrgFLRc3qDrayg6rrCbJpsKKyMwaykVL8FWusJpp'
-        }
-    }
-}
+
