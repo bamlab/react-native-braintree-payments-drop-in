@@ -18,11 +18,11 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.ThreeDSecureInfo;
 
-public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
+public class RNBraintreeDropInModule extends ReactContextBaseJavaModule implements DropInListener {
 
   private Promise mPromise;
   private static final int DROP_IN_REQUEST = 0x444;
-
+  private DropInClient dropInClient;
   private boolean isVerifyingThreeDSecure = false;
 
   public RNBraintreeDropInModule(ReactApplicationContext reactContext) {
@@ -45,7 +45,36 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    DropInRequest dropInRequest = new DropInRequest().clientToken(options.getString("clientToken"));
+
+
+    // DropInRequest dropInRequest = new DropInRequest().clientToken(options.getString("clientToken"));
+    DropInRequest dropInRequest = new DropInRequest();
+
+
+    ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress();
+    address.setGivenName("Jill"); // ASCII-printable characters required, else will throw a validation error
+    address.setSurname("Doe"); // ASCII-printable characters required, else will throw a validation error
+    address.setPhoneNumber("5551234567");
+    address.setStreetAddress("555 Smith St");
+    address.setExtendedAddress("#2");
+    address.setLocality("Chicago");
+    address.setRegion("IL");
+    address.setPostalCode("12345");
+    address.setCountryCodeAlpha2("US");
+
+    // For best results, provide as many additional elements as possible.
+    ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+    additionalInformation.setShippingAddress(address);
+
+    ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
+    threeDSecureRequest.setAmount("10.00");
+    threeDSecureRequest.setEmail("test@email.com");
+    threeDSecureRequest.setBillingAddress(address);
+    threeDSecureRequest.setVersionRequested(ThreeDSecureRequest.VERSION_2);
+    threeDSecureRequest.setAdditionalInformation(additionalInformation);
+    
+    
+    dropInRequest.setThreeDSecureRequest(threeDSecureRequest);
 
     if (options.hasKey("threeDSecure")) {
       final ReadableMap threeDSecureOptions = options.getMap("threeDSecure");
@@ -61,8 +90,11 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
       .requestThreeDSecureVerification(true);
     }
 
+    dropInClient = new DropInClient(this, dropInRequest, options.getString("clientToken"));
+    dropInClient.setListener(this);
+
     mPromise = promise;
-    currentActivity.startActivityForResult(dropInRequest.getIntent(currentActivity), DROP_IN_REQUEST);
+    currentActivity.startActivityForResult(dropInClient.getIntent(currentActivity), DROP_IN_REQUEST);
   }
 
   private final ActivityEventListener mActivityListener = new BaseActivityEventListener() {
