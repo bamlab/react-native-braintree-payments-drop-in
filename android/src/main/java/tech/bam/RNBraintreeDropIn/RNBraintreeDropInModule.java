@@ -17,10 +17,14 @@ import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.ThreeDSecureInfo;
+import com.braintreepayments.api.models.ThreeDSecureAdditionalInformation;
+import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
+import com.braintreepayments.api.models.ThreeDSecureRequest;
 
 
 
-public class RNBraintreeDropInModule extends ReactContextBaseJavaModule implements DropInListener {
+
+public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
   private Promise mPromise;
   private static final int DROP_IN_REQUEST = 0x444;
