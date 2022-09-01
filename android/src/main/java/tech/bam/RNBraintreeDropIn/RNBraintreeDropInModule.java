@@ -58,26 +58,26 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
 
     ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress();
-    address.setGivenName("Jill"); // ASCII-printable characters required, else will throw a validation error
-    address.setSurname("Doe"); // ASCII-printable characters required, else will throw a validation error
-    address.setPhoneNumber("5551234567");
-    address.setStreetAddress("555 Smith St");
-    address.setExtendedAddress("#2");
-    address.setLocality("Chicago");
-    address.setRegion("IL");
-    address.setPostalCode("12345");
-    address.setCountryCodeAlpha2("US");
+    .givenName("Jill") // ASCII-printable characters required, else will throw a validation error
+    .surname("Doe") // ASCII-printable characters required, else will throw a validation error
+    .phoneNumber("5551234567")
+    .streetAddress("555 Smith St")
+    .extendedAddress("#2")
+    .locality("Chicago")
+    .region("IL")
+    .postalCode("12345")
+    .countryCodeAlpha2("US");
 
     // For best results, provide as many additional elements as possible.
     ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
-    additionalInformation.setShippingAddress(address);
+    .shippingAddress(address);
 
     ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
-    threeDSecureRequest.setAmount("10.00");
-    threeDSecureRequest.setEmail("test@email.com");
-    threeDSecureRequest.setBillingAddress(address);
-    threeDSecureRequest.setVersionRequested(ThreeDSecureRequest.VERSION_2);
-    threeDSecureRequest.setAdditionalInformation(additionalInformation);
+    .amount("10")
+    .email("test@email.com")
+    .billingAddress(address);
+    .versionRequested(ThreeDSecureRequest.VERSION_2)
+    .additionalInformation(additionalInformation);
     
     
     dropInRequest.setThreeDSecureRequest(threeDSecureRequest);
@@ -92,7 +92,7 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
       isVerifyingThreeDSecure = true;
 
       dropInRequest
-      .amount(String.valueOf(threeDSecureOptions.getDouble("amount")))
+      .threeDSecureRequest(threeDSecureRequest);
       .requestThreeDSecureVerification(true);
     }
 
