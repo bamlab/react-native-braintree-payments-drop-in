@@ -69,13 +69,13 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
     .countryCodeAlpha2("US");
 
     // For best results, provide as many additional elements as possible.
-    ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
+    ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
     .shippingAddress(address);
 
     ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
     .amount("10")
     .email("test@email.com")
-    .billingAddress(address);
+    .billingAddress(address)
     .versionRequested(ThreeDSecureRequest.VERSION_2)
     .additionalInformation(additionalInformation);
     
@@ -92,7 +92,7 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
       isVerifyingThreeDSecure = true;
 
       dropInRequest
-      .threeDSecureRequest(threeDSecureRequest);
+      .threeDSecureRequest(threeDSecureRequest)
       .requestThreeDSecureVerification(true);
     }
 
