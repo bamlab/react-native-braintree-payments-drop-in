@@ -116,12 +116,10 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
   
           billingAddress.countryCodeAlpha2(threeDSecureBillingAddress.getString("MY"));
           
-          if(billingAddress){
-            threeDSecureRequest.billingAddress(billingAddress);
+          threeDSecureRequest.billingAddress(billingAddress);
             // For best results, provide as many additional elements as possible.
             ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
-            .shippingAddress(address);
-          }
+            .shippingAddress(billingAddress);
         }
 
       dropInRequest
