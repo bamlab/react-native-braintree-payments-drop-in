@@ -79,8 +79,6 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
     .versionRequested(ThreeDSecureRequest.VERSION_2)
     .additionalInformation(additionalInformation);
     
-    
-    dropInRequest.setThreeDSecureRequest(threeDSecureRequest);
 
     if (options.hasKey("threeDSecure")) {
       final ReadableMap threeDSecureOptions = options.getMap("threeDSecure");
