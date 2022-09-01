@@ -11,16 +11,20 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.Promise;
-import com.braintreepayments.api;
+import com.braintreepayments.api.dropin.DropInActivity;
+import com.braintreepayments.api.dropin.DropInRequest;
+import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.ThreeDSecureInfo;
+
+
 
 public class RNBraintreeDropInModule extends ReactContextBaseJavaModule implements DropInListener {
 
   private Promise mPromise;
   private static final int DROP_IN_REQUEST = 0x444;
-  private DropInClient dropInClient;
+  
   private boolean isVerifyingThreeDSecure = false;
 
   public RNBraintreeDropInModule(ReactApplicationContext reactContext) {
@@ -45,8 +49,8 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule implemen
 
 
 
-    // DropInRequest dropInRequest = new DropInRequest().clientToken(options.getString("clientToken"));
-    DropInRequest dropInRequest = new DropInRequest();
+    DropInRequest dropInRequest = new DropInRequest().clientToken(options.getString("clientToken"));
+    // DropInRequest dropInRequest = new DropInRequest();
 
 
     ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress();
@@ -88,11 +92,8 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule implemen
       .requestThreeDSecureVerification(true);
     }
 
-    dropInClient = new DropInClient(this, dropInRequest, options.getString("clientToken"));
-    dropInClient.setListener(this);
-
     mPromise = promise;
-    currentActivity.startActivityForResult(dropInClient.getIntent(currentActivity), DROP_IN_REQUEST);
+    currentActivity.startActivityForResult(dropInRequest.getIntent(currentActivity), DROP_IN_REQUEST);
   }
 
   private final ActivityEventListener mActivityListener = new BaseActivityEventListener() {
