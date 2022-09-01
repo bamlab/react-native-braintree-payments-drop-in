@@ -57,7 +57,7 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
     // DropInRequest dropInRequest = new DropInRequest();
 
 
-    ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress();
+    ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress()
     .givenName("Jill") // ASCII-printable characters required, else will throw a validation error
     .surname("Doe") // ASCII-printable characters required, else will throw a validation error
     .phoneNumber("5551234567")
@@ -72,7 +72,7 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
     ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
     .shippingAddress(address);
 
-    ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
+    ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
     .amount("10")
     .email("test@email.com")
     .billingAddress(address);
