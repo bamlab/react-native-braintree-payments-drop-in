@@ -34,7 +34,7 @@ RCT_REMAP_METHOD(show,
         reject(@"NO_CLIENT_TOKEN", @"You must provide a client token", nil);
         return;
     }
-    
+
     self.options = options;
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
     request.vaultManager = YES;
@@ -47,10 +47,10 @@ RCT_REMAP_METHOD(show,
             reject(@"NO_3DS_AMOUNT", @"You must provide an amount for 3D Secure", nil);
             return;
         }
-        
+
         BTThreeDSecureRequest *threeDSecureRequest = [[BTThreeDSecureRequest alloc] init];
         threeDSecureRequest.versionRequested = BTThreeDSecureVersion2;
-        threeDSecureRequest.amount = [threeDSecureAmount stringValue];
+        threeDSecureRequest.amount = [NSDecimalNumber decimalNumberWithString:threeDSecureAmount.stringValue];
 
         request.threeDSecureVerification = YES;
         request.threeDSecureRequest = threeDSecureRequest;
