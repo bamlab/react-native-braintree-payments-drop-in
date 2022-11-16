@@ -6,6 +6,7 @@ Pod::Spec.new do |s|
                   RNBraintreeDropIn
                    DESC
   s.homepage     = "https://github.com/bamlab/react-native-braintree-payments-drop-in"
+  s.license      = "MIT"
   s.license      = { :type => "MIT", :file => "../LICENSE" }
   s.author             = { "author" => "lagrange.louis@gmail.com" }
   s.platform     = :ios, "9.0"
