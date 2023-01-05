@@ -131,8 +131,7 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
     }
 
     mPromise = promise;
-    dropInClient.launchDropIn(dropInRequest);
-    //currentActivity.startActivityForResult(dropInRequest.getIntent(currentActivity), DROP_IN_REQUEST);
+    currentActivity.startActivityForResult(dropInClient.launchDropIn(dropInRequest), DROP_IN_REQUEST);
   }
 
   private final ActivityEventListener mActivityListener = new BaseActivityEventListener() {
