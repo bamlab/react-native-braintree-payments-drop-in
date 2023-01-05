@@ -124,7 +124,7 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
         }
 
       dropInRequest
-        .setThreeDSecureRequest(threeDSecureRequest)
+        .setThreeDSecureRequest(threeDSecureRequest);
         // .amount(amount);
         
       
