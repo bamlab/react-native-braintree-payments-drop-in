@@ -32,10 +32,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.braintreepayments.api:drop-in:5.+'
+    implementation 'com.braintreepayments.api:drop-in:6.6.0'
     implementation 'com.facebook.react:react-native:+'
-    //Cardinal Mobile SDK
-	implementation 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-2'
 }
 
 // https://developers.braintreepayments.com/guides/3d-secure/migration/android/v3

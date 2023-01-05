@@ -53,8 +53,9 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
 
 
-    DropInRequest dropInRequest = new DropInRequest().clientToken(options.getString("clientToken"));
-    // DropInRequest dropInRequest = new DropInRequest();
+    //DropInRequest dropInRequest = new DropInRequest().clientToken(options.getString("clientToken"));
+    DropInRequest dropInRequest = new DropInRequest();
+    DropInClient dropInClient = new DropInClient(currentActivity, options.getString("clientToken"));
 
 
     
@@ -123,14 +124,15 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
         }
 
       dropInRequest
-        .threeDSecureRequest(threeDSecureRequest)
-        .amount(amount)
-        .requestThreeDSecureVerification(true);
+        .setThreeDSecureRequest(threeDSecureRequest)
+        // .amount(amount);
+        
       
     }
 
     mPromise = promise;
-    currentActivity.startActivityForResult(dropInRequest.getIntent(currentActivity), DROP_IN_REQUEST);
+    dropInClient.launchDropIn(dropInRequest);
+    //currentActivity.startActivityForResult(dropInRequest.getIntent(currentActivity), DROP_IN_REQUEST);
   }
 
   private final ActivityEventListener mActivityListener = new BaseActivityEventListener() {
