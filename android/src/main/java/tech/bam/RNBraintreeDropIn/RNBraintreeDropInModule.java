@@ -119,7 +119,7 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
                   }
               } else {
                   // there was no existing payment method
-                  promise.reject(GET_LAST_USED_CARD_ERROR, "No existing lasted card");
+                  promise.reject(GET_LAST_USED_CARD_ERROR, "No existing last used card");
               }
               mPromise = null;
           }

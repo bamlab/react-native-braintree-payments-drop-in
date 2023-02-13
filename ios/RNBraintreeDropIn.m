@@ -84,6 +84,25 @@ RCT_REMAP_METHOD(show,
         [self.reactRoot presentViewController:dropIn animated:YES completion:nil];
 }
 
+RCT_REMAP_METHOD(getLastUsedPaymentMethod,
+                 options:(NSDictionary*)options
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+    NSString* clientToken = options[@"clientToken"];
+         if (!clientToken) {
+             reject(@"NO_CLIENT_TOKEN", @"You must provide a client token", nil);
+             return;
+         }
+    [BTDropInResult fetchDropInResultForAuthorization:(NSString *) clientToken handler:^(BTDropInResult * _Nullable result, NSError * _Nullable error) {
+        if (error != nil) {
+            reject(@"GET_LAST_USED_CARD_ERROR", error.localizedDescription, nil);
+        } else {
+            [[self class] resolvePayment :result resolver:resolve];
+        }
+    }];
+}
+
 + (void)resolvePayment:(BTDropInResult* _Nullable)result resolver:(RCTPromiseResolveBlock _Nonnull)resolve {
     NSMutableDictionary* jsResult = [NSMutableDictionary new];
     [jsResult setObject:result.paymentMethod.nonce forKey:@"nonce"];
