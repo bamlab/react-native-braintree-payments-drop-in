@@ -17,6 +17,7 @@ import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.ThreeDSecureInfo;
+import com.braintreepayments.api.models.ThreeDSecureRequest;
 
 public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
@@ -45,7 +46,11 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    DropInRequest dropInRequest = new DropInRequest().clientToken(options.getString("clientToken"));
+    DropInRequest dropInRequest = new DropInRequest()
+      .clientToken(options.getString("clientToken"))
+      .disablePayPal()
+      .collectDeviceData(true)
+      .vaultManager(true);
 
     if (options.hasKey("threeDSecure")) {
       final ReadableMap threeDSecureOptions = options.getMap("threeDSecure");
@@ -56,9 +61,16 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
       isVerifyingThreeDSecure = true;
 
+      ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
+              .amount(String.valueOf(threeDSecureOptions.getDouble("amount")))
+              .versionRequested(ThreeDSecureRequest.VERSION_2);
+
+
       dropInRequest
-      .amount(String.valueOf(threeDSecureOptions.getDouble("amount")))
-      .requestThreeDSecureVerification(true);
+              .requestThreeDSecureVerification(true)
+              .threeDSecureRequest(threeDSecureRequest);
+
+
     }
 
     mPromise = promise;
@@ -77,19 +89,23 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
       if (resultCode == Activity.RESULT_OK) {
         DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
         PaymentMethodNonce paymentMethodNonce = result.getPaymentMethodNonce();
+        String deviceData = result.getDeviceData();
 
         if (isVerifyingThreeDSecure && paymentMethodNonce instanceof CardNonce) {
           CardNonce cardNonce = (CardNonce) paymentMethodNonce;
           ThreeDSecureInfo threeDSecureInfo = cardNonce.getThreeDSecureInfo();
-          if (!threeDSecureInfo.isLiabilityShiftPossible()) {
-            mPromise.reject("3DSECURE_NOT_ABLE_TO_SHIFT_LIABILITY", "3D Secure liability cannot be shifted");
-          } else if (!threeDSecureInfo.isLiabilityShifted()) {
-            mPromise.reject("3DSECURE_LIABILITY_NOT_SHIFTED", "3D Secure liability was not shifted");
+          if (threeDSecureInfo.isLiabilityShiftPossible()) { // Card is eligible for 3D secure
+            if (threeDSecureInfo.isLiabilityShifted()) { // 3D Secure authentication success
+               resolvePayment(paymentMethodNonce, deviceData);
+            } else {
+               mPromise.reject("3DSECURE_LIABILITY_NOT_SHIFTED", "3D Secure liability was not shifted");
+            }
           } else {
-            resolvePayment(paymentMethodNonce);
+            // 3D Secure is not support, we allow users to continue without 3D Secure
+            resolvePayment(paymentMethodNonce, deviceData);
           }
         } else {
-          resolvePayment(paymentMethodNonce);
+          resolvePayment(paymentMethodNonce, deviceData);
         }
       } else if (resultCode == Activity.RESULT_CANCELED) {
         mPromise.reject("USER_CANCELLATION", "The user cancelled");
@@ -102,12 +118,13 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
     }
   };
 
-  private final void resolvePayment(PaymentMethodNonce paymentMethodNonce) {
+  private final void resolvePayment(PaymentMethodNonce paymentMethodNonce, String deviceData) {
     WritableMap jsResult = Arguments.createMap();
     jsResult.putString("nonce", paymentMethodNonce.getNonce());
     jsResult.putString("type", paymentMethodNonce.getTypeLabel());
     jsResult.putString("description", paymentMethodNonce.getDescription());
     jsResult.putBoolean("isDefault", paymentMethodNonce.isDefault());
+    jsResult.putString("deviceData", deviceData);
 
     mPromise.resolve(jsResult);
   }

@@ -3,6 +3,7 @@
   "version": "1.2.0",
   "description": "React Native integration of Braintree Drop-in",
   "main": "index.js",
+  "homepage": "https://github.com/bamlab/react-native-braintree-payments-drop-in",
   "repository": {
     "type": "git",
     "url": "git@github.com:bamlab/react-native-braintree-payments-drop-in.git"
@@ -10,12 +11,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "react-native",
-    "braintree",
-    "payments",
-    "drop-in"
-  ],
+  "keywords": ["react-native", "braintree", "payments", "drop-in"],
   "author": {
     "name": "Louis Lagrange",
     "email": "lagrange.louis@gmail.com",
