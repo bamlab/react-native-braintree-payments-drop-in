@@ -2,6 +2,10 @@ package tech.bam.RNBraintreeDropIn;
 
 import android.app.Activity;
 import android.content.Intent;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.braintreepayments.api.dropin.utils.PaymentMethodType;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -25,6 +29,7 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
   private static final int DROP_IN_REQUEST = 0x444;
 
   private boolean isVerifyingThreeDSecure = false;
+  private static final String GET_LAST_USED_CARD_ERROR = "GET_LAST_USED_CARD_ERROR";
 
   public RNBraintreeDropInModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -77,6 +82,49 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
     currentActivity.startActivityForResult(dropInRequest.getIntent(currentActivity), DROP_IN_REQUEST);
   }
 
+  @ReactMethod
+  public void getLastUsedPaymentMethod(final ReadableMap options, final Promise promise) {
+
+      if (!options.hasKey("clientToken")) {
+          promise.reject("NO_CLIENT_TOKEN", "You must provide a client token");
+          return;
+      }
+      Activity activity = getCurrentActivity();
+      DropInResult.fetchDropInResult((AppCompatActivity) activity, options.getString("clientToken"), new DropInResult.DropInResultListener() {
+          @Override
+          public void onError(Exception exception) {
+              // an error occurred
+              promise.reject(GET_LAST_USED_CARD_ERROR, exception.getMessage());
+          }
+
+          @Override
+          public void onResult(DropInResult result) {
+              PaymentMethodType paymentMethodType = result.getPaymentMethodType();
+              PaymentMethodNonce paymentMethodNonce = result.getPaymentMethodNonce();
+              if (paymentMethodType == null || paymentMethodNonce == null) {
+                  // there was no existing payment method
+                  promise.reject(GET_LAST_USED_CARD_ERROR, "No existing last used card");
+                  return;
+              }
+              if (paymentMethodType == PaymentMethodType.GOOGLE_PAYMENT) {
+                  // The last payment method the user used was GooglePayment. The GooglePayment
+                  // flow will need to be performed by the user again at the time of checkout
+                  // using GooglePayment#requestPayment(...). No PaymentMethodNonce will be
+                  // present in result.getPaymentMethodNonce(), this is only an indication that
+                  // the user last used GooglePayment.
+                  // 2nd note: I'm not handling google pay since we don't need it on our feat yet.
+                  promise.reject("NOT_SUPPORT_GOOGLE_PAY", "We currently not implement Google pay yet");
+              } else {
+                  // show the payment method in your UI and charge the user at the
+                  // time of checkout using the nonce: paymentMethod.getNonce()
+                  String deviceData = result.getDeviceData();
+                  WritableMap cardInfo = getCardInfo(paymentMethodNonce, deviceData);
+                  promise.resolve(cardInfo);
+              }
+          }
+      });
+  }
+
   private final ActivityEventListener mActivityListener = new BaseActivityEventListener() {
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
@@ -119,6 +167,10 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
   };
 
   private final void resolvePayment(PaymentMethodNonce paymentMethodNonce, String deviceData) {
+    mPromise.resolve(getCardInfo(paymentMethodNonce, deviceData));
+  }
+
+  private WritableMap getCardInfo(PaymentMethodNonce paymentMethodNonce, String deviceData) {
     WritableMap jsResult = Arguments.createMap();
     jsResult.putString("nonce", paymentMethodNonce.getNonce());
     jsResult.putString("type", paymentMethodNonce.getTypeLabel());
@@ -126,7 +178,7 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
     jsResult.putBoolean("isDefault", paymentMethodNonce.isDefault());
     jsResult.putString("deviceData", deviceData);
 
-    mPromise.resolve(jsResult);
+    return jsResult;
   }
 
   @Override
