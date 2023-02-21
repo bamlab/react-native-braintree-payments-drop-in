@@ -1,0 +1,66 @@
+name: Release
+run-name: Release at commit ${{ github.sha }} in ${{ github.ref_name}}
+
+on:
+  # Trigger workflow manually
+  workflow_dispatch:
+
+# Cancel previous workflow on same branch
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Run only on main and release branch
+  check-branch:
+    name: Check branch on main / release
+    runs-on: ubuntu-latest
+    outputs:
+      branch-match: ${{steps.check-branch.outputs.match}}
+    steps:
+      - name: Check branch
+        uses: actions-ecosystem/action-regex-match@v2
+        id: check-branch
+        with:
+          text: ${{ github.ref_name }}
+          regex: '^release\/*|^main'
+      - name: Check branch result
+        run: echo ${{steps.check-branch.outputs.match}}
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          # fix push permission https://github.com/semantic-release/github/issues/175#issuecomment-1122569317
+          token: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://npm.pkg.github.com'
+      - name: Install yarn
+        run: npm i -g yarn
+      - name: Restore yarn cache
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            node_modules
+            .yarn-cache
+          key: ${{ runner.os }}-${{env.cache_version}}-build-${{ env.cache_name }}-${{ env.lockfile_hash }}
+      - name: Install Node dependencies
+        run: yarn install:ci
+      - name: Build
+        run: yarn build
+      - name: Auth npm
+        run: |
+          {
+            echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}"
+          } | tee -a .npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.SEMANTIC_RELEASE_NPM_TOKEN }}
+      - name: Release with semantic-release
+        run: yarn release --ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}

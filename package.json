@@ -1,21 +1,34 @@
 {
-  "name": "react-native-braintree-payments-drop-in",
+  "name": "@ehrocks/react-native-braintree-payments-drop-in",
   "version": "1.2.0",
   "description": "React Native integration of Braintree Drop-in",
   "main": "index.js",
-  "homepage": "https://github.com/bamlab/react-native-braintree-payments-drop-in",
+  "homepage": "https://github.com/Thinkei/react-native-braintree-payments-drop-in",
   "repository": {
     "type": "git",
-    "url": "git@github.com:bamlab/react-native-braintree-payments-drop-in.git"
+    "url": "git@github.com:Thinkei/react-native-braintree-payments-drop-in.git"
   },
+  "files": [
+    "android",
+    "ios",
+    "RNBraintreeDropIn.podspec"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "semantic-release"
+  },
+  "devDependencies": {
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^8.0.5",
+    "@semantic-release/gitlab": "^9.3.1",
+    "@semantic-release/npm": "^9.0.1",
+    "semantic-release": "^19.0.2"
   },
   "keywords": ["react-native", "braintree", "payments", "drop-in"],
   "author": {
-    "name": "Louis Lagrange",
-    "email": "lagrange.louis@gmail.com",
-    "url": "https://github.com/Minishlink"
+    "name": "Duc Nguyen - eBenefits",
+    "email": "duc.nguyenanh@employmenthero.com",
+    "url": "https://github.com/Thinkei"
   },
   "license": "MIT",
   "peerDependencies": {
