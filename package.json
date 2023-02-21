@@ -1,6 +1,6 @@
 {
   "name": "@ehrocks/react-native-braintree-payments-drop-in",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "React Native integration of Braintree Drop-in",
   "main": "index.js",
   "homepage": "https://github.com/Thinkei/react-native-braintree-payments-drop-in",
@@ -24,7 +24,12 @@
     "@semantic-release/npm": "^9.0.1",
     "semantic-release": "^19.0.2"
   },
-  "keywords": ["react-native", "braintree", "payments", "drop-in"],
+  "keywords": [
+    "react-native",
+    "braintree",
+    "payments",
+    "drop-in"
+  ],
   "author": {
     "name": "Duc Nguyen - eBenefits",
     "email": "duc.nguyenanh@employmenthero.com",
