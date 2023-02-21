@@ -50,7 +50,7 @@ jobs:
             .yarn-cache
           key: ${{ runner.os }}-${{env.cache_version}}-build-${{ env.cache_name }}-${{ env.lockfile_hash }}
       - name: Install Node dependencies
-        run: yarn install:ci
+        run: yarn install --frozen-lockfile
       - name: Build
         run: yarn build
       - name: Auth npm
