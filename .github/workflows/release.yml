@@ -23,7 +23,7 @@ jobs:
         id: check-branch
         with:
           text: ${{ github.ref_name }}
-          regex: '^release\/*|^main'
+          regex: '^release\/*|^master'
       - name: Check branch result
         run: echo ${{steps.check-branch.outputs.match}}
 
