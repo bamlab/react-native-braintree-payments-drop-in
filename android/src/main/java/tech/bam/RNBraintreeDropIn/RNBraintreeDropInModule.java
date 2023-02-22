@@ -17,12 +17,18 @@ import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.ThreeDSecureInfo;
+import com.braintreepayments.api.models.ThreeDSecureAdditionalInformation;
+import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
+import com.braintreepayments.api.models.ThreeDSecureRequest;
+
+
+
 
 public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
   private Promise mPromise;
   private static final int DROP_IN_REQUEST = 0x444;
-
+  
   private boolean isVerifyingThreeDSecure = false;
 
   public RNBraintreeDropInModule(ReactApplicationContext reactContext) {
@@ -45,7 +51,10 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
       return;
     }
 
+
+
     DropInRequest dropInRequest = new DropInRequest().clientToken(options.getString("clientToken"));
+    
 
     if (options.hasKey("threeDSecure")) {
       final ReadableMap threeDSecureOptions = options.getMap("threeDSecure");
@@ -56,9 +65,66 @@ public class RNBraintreeDropInModule extends ReactContextBaseJavaModule {
 
       isVerifyingThreeDSecure = true;
 
+      String amount = String.valueOf(threeDSecureOptions.getDouble("amount"));
+
+      ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
+        .amount(amount)
+        .versionRequested(ThreeDSecureRequest.VERSION_2);
+
+        if (threeDSecureOptions.hasKey("email")) {
+          threeDSecureRequest.email(threeDSecureOptions.getString("email"));
+        }
+
+        if (threeDSecureOptions.hasKey("billingAddress")) {
+          final ReadableMap threeDSecureBillingAddress = threeDSecureOptions.getMap("billingAddress");
+          ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
+  
+          if (threeDSecureBillingAddress.hasKey("givenName")) {
+            billingAddress.givenName(threeDSecureBillingAddress.getString("givenName"));
+          }
+  
+          if (threeDSecureBillingAddress.hasKey("surname")) {
+            billingAddress.surname(threeDSecureBillingAddress.getString("surname"));
+          }
+  
+          if (threeDSecureBillingAddress.hasKey("streetAddress")) {
+            billingAddress.streetAddress(threeDSecureBillingAddress.getString("streetAddress"));
+          }
+  
+          if (threeDSecureBillingAddress.hasKey("extendedAddress")) {
+            billingAddress.extendedAddress(threeDSecureBillingAddress.getString("extendedAddress"));
+          }
+  
+          if (threeDSecureBillingAddress.hasKey("locality")) {
+            billingAddress.locality(threeDSecureBillingAddress.getString("locality"));
+          }
+  
+          if (threeDSecureBillingAddress.hasKey("region")) {
+            billingAddress.region(threeDSecureBillingAddress.getString("region"));
+          }
+  
+          if (threeDSecureBillingAddress.hasKey("postalCode")) {
+            billingAddress.postalCode(threeDSecureBillingAddress.getString("postalCode"));
+          }
+  
+          if (threeDSecureBillingAddress.hasKey("phoneNumber")) {
+            billingAddress.phoneNumber(threeDSecureBillingAddress.getString("phoneNumber"));
+          }
+  
+          billingAddress.countryCodeAlpha2(threeDSecureBillingAddress.getString("MY"));
+          
+          threeDSecureRequest.billingAddress(billingAddress);
+            // For best results, provide as many additional elements as possible.
+            ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
+            .shippingAddress(billingAddress);
+        }
+
       dropInRequest
-      .amount(String.valueOf(threeDSecureOptions.getDouble("amount")))
+      .threeDSecureRequest(threeDSecureRequest)
+      .amount(amount)
       .requestThreeDSecureVerification(true);
+        
+      
     }
 
     mPromise = promise;
