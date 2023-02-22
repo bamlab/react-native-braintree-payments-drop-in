@@ -31,7 +31,6 @@ RCT_REMAP_METHOD(show,
             return;
         }
 
-        request.threeDSecureVerification = YES;
         BTThreeDSecureRequest *threeDSecureRequest = [[BTThreeDSecureRequest alloc] init];
         threeDSecureRequest.amount = [NSDecimalNumber decimalNumberWithString:threeDSecureAmount.stringValue];
         threeDSecureRequest.versionRequested = BTThreeDSecureVersion2;
@@ -85,7 +84,7 @@ RCT_REMAP_METHOD(show,
 
             if (error != nil) {
                 reject(error.localizedDescription, error.localizedDescription, error);
-            } else if (result.cancelled) {
+            } else if (result.canceled) {
                 reject(@"USER_CANCELLATION", @"The user cancelled", nil);
             } else {
                 if (threeDSecureOptions && [result.paymentMethod isKindOfClass:[BTCardNonce class]]) {
