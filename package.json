@@ -1,6 +1,6 @@
 {
   "name": "@ehrocks/react-native-braintree-payments-drop-in",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "React Native integration of Braintree Drop-in",
   "main": "index.js",
   "homepage": "https://github.com/Thinkei/react-native-braintree-payments-drop-in",
