@@ -96,9 +96,11 @@ RCT_REMAP_METHOD(getLastUsedPaymentMethod,
          }
     [BTDropInResult fetchDropInResultForAuthorization:(NSString *) clientToken handler:^(BTDropInResult * _Nullable result, NSError * _Nullable error) {
         if (error != nil) {
-            reject(@"GET_LAST_USED_CARD_ERROR", error.localizedDescription, nil);
+             reject(@"GET_LAST_USED_CARD_ERROR", error.localizedDescription, nil);
+        } else if(result != nil && result.paymentMethod != nil ) {
+             [[self class] resolvePayment :result resolver:resolve];
         } else {
-            [[self class] resolvePayment :result resolver:resolve];
+             reject(@"GET_LAST_USED_CARD_ERROR", 'No existing last used card', nil);
         }
     }];
 }
