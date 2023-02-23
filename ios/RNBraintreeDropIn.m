@@ -100,7 +100,7 @@ RCT_REMAP_METHOD(getLastUsedPaymentMethod,
         } else if(result != nil && result.paymentMethod != nil ) {
              [[self class] resolvePayment :result resolver:resolve];
         } else {
-             reject(@"GET_LAST_USED_CARD_ERROR", 'No existing last used card', nil);
+             reject(@"GET_LAST_USED_CARD_ERROR", @"No existing last used card", nil);
         }
     }];
 }
